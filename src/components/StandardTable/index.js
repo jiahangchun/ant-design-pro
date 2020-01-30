@@ -14,10 +14,11 @@ function initTotalList(columns) {
 
 class StandardTable extends PureComponent {
   constructor(props) {
+    console.log('初始化', props);
     super(props);
     const { columns } = props;
     const needTotalList = initTotalList(columns);
-
+    console.log('初始化2', needTotalList);
     this.state = {
       selectedRowKeys: [],
       needTotalList,
@@ -65,6 +66,8 @@ class StandardTable extends PureComponent {
     const { selectedRowKeys, needTotalList } = this.state;
     const { data = {}, rowKey, ...rest } = this.props;
     const { list = [], pagination } = data;
+
+    console.log('aaaaa', this.props);
 
     const paginationProps = {
       showSizeChanger: true,

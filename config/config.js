@@ -116,5 +116,12 @@ export default {
     basePath: '/',
   },
 
+  proxy: {
+    '/tp/': {
+      target: 'http://localhost:1234/',
+      changeOrigin: true,
+      pathRewrite: { '^/server': '' },
+    },
+  },
   chainWebpack: webpackPlugin,
 };
