@@ -172,9 +172,9 @@ class TableList extends PureComponent {
             <FormItem label="Tag">
               {getFieldDecorator('tag')(
                 <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="全部列表">ALL</Option>
                   <Option value="OMS">OMS</Option>
                   <Option value="PMS">PMS</Option>
+                  <Option value="多地址改造">多地址改造</Option>
                 </Select>
               )}
             </FormItem>
