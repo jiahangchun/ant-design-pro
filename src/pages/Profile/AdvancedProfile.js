@@ -79,7 +79,7 @@ const description = (
 
 const tabList = [
   {
-    key: 'detail',
+    key: 'swaggerDetailApi.js',
     tab: '详情',
   },
   {

@@ -16,7 +16,7 @@ if (pwa) {
     const reloadSW = async () => {
       // Check if there is sw whose state is waiting in ServiceWorkerRegistration
       // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
-      const worker = e.detail && e.detail.waiting;
+      const worker = e.swaggerDetailApi && e.swaggerDetailApi.waiting;
       if (!worker) {
         return Promise.resolve();
       }

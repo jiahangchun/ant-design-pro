@@ -15,6 +15,7 @@ export default [
       {
         component: '404',
       },
+      { path: '/profile/basic/:id', name: 'swaggerDetail', component: './Profile/BasicProfile' },
     ],
   },
   // app
@@ -142,30 +143,32 @@ export default [
           // },
         ],
       },
-      // {
-      //   path: '/profile',
-      //   name: 'profile',
-      //   icon: 'profile',
-      //   routes: [
-      //     // profile
-      //     {
-      //       path: '/profile/basic',
-      //       name: 'basic',
-      //       component: './Profile/BasicProfile',
-      //     },
-      //     {
-      //       path: '/profile/basic/:id',
-      //       hideInMenu: true,
-      //       component: './Profile/BasicProfile',
-      //     },
-      //     {
-      //       path: '/profile/advanced',
-      //       name: 'advanced',
-      //       authority: ['admin'],
-      //       component: './Profile/AdvancedProfile',
-      //     },
-      //   ],
-      // },
+      {
+        path: '/profile',
+        // name: 'profile',
+        // icon: 'profile',
+        routes: [
+          { path: '/profile/basic/:id', name: 'swaggerDetail', component: './Profile/BasicProfile' },
+        ],
+        // routes: [
+        //   {
+        //     path: '/profile/basic',
+        //     name: 'basic',
+        //     component: './Profile/BasicProfile',
+        //   },
+        //   {
+        //     path: '/profile/basic/:id',
+        //     hideInMenu: true,
+        //     component: './Profile/BasicProfile',
+        //   },
+        //   {
+        //     path: '/profile/advanced',
+        //     name: 'advanced',
+        //     authority: ['admin'],
+        //     component: './Profile/AdvancedProfile',
+        //   },
+        // ],
+      },
       // {
       //   name: 'result',
       //   icon: 'check-circle-o',

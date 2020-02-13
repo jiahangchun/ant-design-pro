@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
-import { connect } from 'dva';
-import { Card, Badge, Table, Divider } from 'antd';
+import React, {Component} from 'react';
+import {connect} from 'dva';
+import {Card, Badge, Table, Divider, Icon, Input} from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './BasicProfile.less';
+// import Link from "react-router-dom";
+import Link from 'umi/link';
 
-const { Description } = DescriptionList;
+const {Description} = DescriptionList;
 
 const progressColumns = [
   {
@@ -24,9 +26,9 @@ const progressColumns = [
     key: 'status',
     render: text =>
       text === 'success' ? (
-        <Badge status="success" text="成功" />
+        <Badge status="success" text="成功"/>
       ) : (
-        <Badge status="processing" text="进行中" />
+        <Badge status="processing" text="进行中"/>
       ),
   },
   {
@@ -41,24 +43,30 @@ const progressColumns = [
   },
 ];
 
-@connect(({ profile, loading }) => ({
+@connect(({profile, loading}) => ({
   profile,
-  loading: loading.effects['profile/fetchBasic'],
+  loading: loading.effects['profile/querySwaggerDetail'],
 }))
 class BasicProfile extends Component {
   componentDidMount() {
-    const { dispatch, match } = this.props;
-    const { params } = match;
+    const {dispatch, match} = this.props;
+    const {params} = match;
 
     dispatch({
-      type: 'profile/fetchBasic',
-      payload: params.id || '1000000000',
+      type: 'profile/querySwaggerDetail',
+      payload: params.id,
     });
   }
 
   render() {
-    const { profile = {}, loading } = this.props;
-    const { basicGoods = [], basicProgress = [], userInfo = {}, application = {} } = profile;
+    const {profile = {}, loading} = this.props;
+
+
+    const {basicGoods = [], basicProgress = [], userInfo = {}, data = {}} = profile;
+    const {requestParamVos = []} = data;
+
+    console.log("返回值Application", data);
+
     let goodsData = [];
     if (basicGoods.length) {
       let num = 0;
@@ -73,112 +81,92 @@ class BasicProfile extends Component {
         amount,
       });
     }
-    const renderContent = (value, row, index) => {
-      const obj = {
-        children: value,
-        props: {},
-      };
-      if (index === basicGoods.length) {
-        obj.props.colSpan = 0;
-      }
-      return obj;
-    };
-    const goodsColumns = [
+    const requestColumn = [
       {
-        title: '商品编号',
-        dataIndex: 'id',
-        key: 'id',
-        render: (text, row, index) => {
-          if (index < basicGoods.length) {
-            return <a href="">{text}</a>;
-          }
-          return {
-            children: <span style={{ fontWeight: 600 }}>总计</span>,
-            props: {
-              colSpan: 4,
-            },
-          };
-        },
-      },
-      {
-        title: '商品名称',
+        title: '参数名称',
         dataIndex: 'name',
         key: 'name',
-        render: renderContent,
+        width: '15%',
       },
       {
-        title: '商品条码',
-        dataIndex: 'barcode',
-        key: 'barcode',
-        render: renderContent,
+        title: '参数位置',
+        dataIndex: 'in',
+        key: 'in',
+        width: '10%',
       },
       {
-        title: '单价',
-        dataIndex: 'price',
-        key: 'price',
-        align: 'right',
-        render: renderContent,
-      },
-      {
-        title: '数量（件）',
-        dataIndex: 'num',
-        key: 'num',
-        align: 'right',
-        render: (text, row, index) => {
-          if (index < basicGoods.length) {
-            return text;
+        title: '是否必须',
+        dataIndex: 'required',
+        key: 'required',
+        width: '5%',
+        render: (text) => {
+          if (text) {
+            return (
+              <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a"/>
+            );
+          } else {
+            return (
+              <Icon type="close-circle" theme="twoTone" twoToneColor="#7B7D7B"/>
+            );
           }
-          return <span style={{ fontWeight: 600 }}>{text}</span>;
+        }
+      },
+      {
+        title: '参数类型',
+        dataIndex: 'type',
+        key: 'type',
+        width: '10%',
+        render: (text, record) => {
+          if (record.type == null) {
+            return (
+              <a>{record.ref}</a>
+              /*<Link to={`/profile/basic/${record.key}`}>{record.ref}</Link>*/
+            );
+          }
+          return text;
         },
       },
       {
-        title: '金额',
-        dataIndex: 'amount',
-        key: 'amount',
-        align: 'right',
-        render: (text, row, index) => {
-          if (index < basicGoods.length) {
-            return text;
-          }
-          return <span style={{ fontWeight: 600 }}>{text}</span>;
-        },
+        title: '参数描述',
+        dataIndex: 'description',
+        key: 'description',
+        width: '30%',
       },
+      {
+        title: '默认值',
+        dataIndex: 'defaultValue',
+        key: 'defaultValue',
+        ellipsis: true,
+        width: '30%',
+      },
+
     ];
     return (
-      <PageHeaderWrapper title="基础详情页" loading={loading}>
+      <PageHeaderWrapper title="接口详情页" loading={loading}>
         <Card bordered={false}>
-          <DescriptionList size="large" title="退款申请" style={{ marginBottom: 32 }}>
-            <Description term="取货单号">{application.id}</Description>
-            <Description term="状态">{application.status}</Description>
-            <Description term="销售单号">{application.orderNo}</Description>
-            <Description term="子订单">{application.childOrderNo}</Description>
+          <DescriptionList size="large" title="简要描述" style={{marginBottom: 32}}>
+            <Description term="请求URL">{data.url}</Description>
+            <Description term="请求方式">{data.method}</Description>
+            <Description term="简要描述">{data.description}</Description>
           </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />
-          <DescriptionList size="large" title="用户信息" style={{ marginBottom: 32 }}>
-            <Description term="用户姓名">{userInfo.name}</Description>
-            <Description term="联系电话">{userInfo.tel}</Description>
-            <Description term="常用快递">{userInfo.delivery}</Description>
-            <Description term="取货地址">{userInfo.addr}</Description>
-            <Description term="备注">{userInfo.remark}</Description>
-          </DescriptionList>
-          <Divider style={{ marginBottom: 32 }} />
-          <div className={styles.title}>退货商品</div>
+          <Divider style={{marginBottom: 32}}/>
+          <div className={styles.title}>请求参数</div>
           <Table
-            style={{ marginBottom: 24 }}
+            rowKey={record => record.key}
+            bordered={true}
+            style={{marginBottom: 24}}
             pagination={false}
-            loading={loading}
-            dataSource={goodsData}
-            columns={goodsColumns}
-            rowKey="id"
+            dataSource={requestParamVos}
+            columns={requestColumn}
           />
           <div className={styles.title}>退货进度</div>
-          <Table
-            style={{ marginBottom: 16 }}
-            pagination={false}
-            loading={loading}
-            dataSource={basicProgress}
-            columns={progressColumns}
-          />
+          {/*<Table*/}
+          {/*  style={{marginBottom: 16}}*/}
+          {/*  pagination={false}*/}
+          {/*  loading={loading}*/}
+          {/*  dataSource={basicProgress}*/}
+          {/*  columns={progressColumns}*/}
+          {/*/>*/}
         </Card>
       </PageHeaderWrapper>
     );

@@ -1,11 +1,21 @@
 import request from '@/utils/request';
 
+//查询swagger列表
 export async function querySwaggerList(params) {
-  console.log('触发了请求');
   return request('/tp/query/swagger/api/list', {
     method: 'POST',
     data: {
       ...params,
     },
   });
+}
+
+//查询接口详情
+export async function querySwaggerDetail(key) {
+  return request(`/tp/get/swagger/api?key=${key}`);
+}
+
+//查询结构
+export async function querySwaggerDefinition(key) {
+  return request(`/tp/get/definition/dto?key=${key}`);
 }

@@ -1,4 +1,5 @@
-import { queryBasicProfile, queryAdvancedProfile } from '@/services/api';
+import {queryAdvancedProfile} from '@/services/api';
+import {querySwaggerDetail} from '@/services/swagger';
 
 export default {
   namespace: 'profile',
@@ -8,17 +9,27 @@ export default {
     advancedOperation1: [],
     advancedOperation2: [],
     advancedOperation3: [],
+    data: {},
+    resultDataList:{},
   },
 
   effects: {
-    *fetchBasic({ payload }, { call, put }) {
-      const response = yield call(queryBasicProfile, payload);
+    * querySwaggerDetail({payload}, {call, put}) {
+      const response = yield call(querySwaggerDetail, payload);
       yield put({
-        type: 'show',
+        type: 'save',
         payload: response,
       });
     },
-    *fetchAdvanced(_, { call, put }) {
+    * getSwaggerDefinition({payload}, {call, put}) {
+      const response = yield call(querySwaggerDetail, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
+    },
+
+    * fetchAdvanced(_, {call, put}) {
       const response = yield call(queryAdvancedProfile);
       yield put({
         type: 'show',
@@ -28,10 +39,17 @@ export default {
   },
 
   reducers: {
-    show(state, { payload }) {
+    show(state, {payload}) {
       return {
         ...state,
         ...payload,
+      };
+    },
+
+    save(state, action) {
+      return {
+        ...state,
+        data: action.payload,
       };
     },
   },
