@@ -145,10 +145,17 @@ export default [
       },
       {
         path: '/profile',
-        // name: 'profile',
-        // icon: 'profile',
         routes: [
-          { path: '/profile/basic/:id', name: 'swaggerDetail', component: './Profile/BasicProfile' },
+          {
+            path: '/profile/basic/:id',
+            name: 'swaggerDetail',
+            component: './Profile/BasicProfile',
+          },
+          {
+            path: '/profile/advanced/:key',
+            name: 'advanced',
+            component: './Profile/AdvancedProfile',
+          },
         ],
         // routes: [
         //   {
