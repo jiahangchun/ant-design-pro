@@ -11,7 +11,9 @@ export default {
     advancedOperation3: [],
     data: {},
     detail: {},
-    realJson: {},
+    realJson: {
+      mockRequestResult: {},
+    },
   },
 
   effects: {

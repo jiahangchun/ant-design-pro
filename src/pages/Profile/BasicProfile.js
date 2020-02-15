@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import {connect} from 'dva';
-import {Card, Badge, Table, Divider, Icon, Input, Modal, Button, Popover, message, Result} from 'antd';
+import {Card, Badge, Table, Divider, Icon, Input, Modal, Button, Popover, message, Result, Form} from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './BasicProfile.less';
+import ReactJson from 'react-json-view'
 
 const {Description} = DescriptionList;
 
@@ -51,7 +52,13 @@ const progressColumns = [
   loading: loading.effects['profile/querySwaggerDetail'],
 }))
 class BasicProfile extends Component {
-  state = {visible: false};
+  state = {
+    visible: false,
+    resultObj: {},
+    requestParamVos: [],
+    data: {
+    }
+  };
   //查询详情
   showModal = key => {
     const {dispatch} = this.props;
@@ -64,11 +71,20 @@ class BasicProfile extends Component {
     });
   };
   //查询真实请求的json数据
-  queryRealResult = key => {
+  queryRealResult = data => {
     const {dispatch} = this.props;
     dispatch({
       type: 'profile/queryRealResult',
-      payload: key,
+      payload: data,
+    }).then(() => {
+      const {profile = {}} = this.props;
+      const {realJson = {}} = profile;
+      const {mockRequestResult = {}} = realJson;
+      const resultObj = typeof mockRequestResult == "string" ?
+        JSON.parse(mockRequestResult) : mockRequestResult;
+      this.setState({
+        resultObj: resultObj,
+      });
     });
     message.success('实际请求正在执行，请拉到最底部等待查询结果（参数使用默认值）', 10);
   };
@@ -84,6 +100,24 @@ class BasicProfile extends Component {
       visible: false,
     });
   };
+  //填写默认值，然后数据写回到state
+  changeDefaultParamValue = (e) => {
+    const value = e.target.value, name = e.target.name;
+    const data = this.state.data;
+    const paramData = data.requestParamVos;
+    paramData.forEach(column => {
+      if (column.name == name) {
+        column.defaultValue = value;
+      }
+    });
+    let toUpdateData = Object.assign(
+      {},
+      this.state.data,
+      {requestParamVos: paramData});
+    this.setState({
+      data: toUpdateData,
+    });
+  };
 
   componentDidMount() {
     const {dispatch, match} = this.props;
@@ -91,17 +125,22 @@ class BasicProfile extends Component {
     dispatch({
       type: 'profile/querySwaggerDetail',
       payload: params.id,
+    }).then(() => {
+      const {profile = {}} = this.props;
+      const {data = {}} = profile;
+      const {requestParamVos = []} = data;
+      this.setState({
+        requestParamVos: requestParamVos,
+        data: data,
+      });
     });
   }
 
   render() {
     const {profile = {}, loading} = this.props;
-    const {data = {}, detail = {}, realJson = {}} = profile;
+    const {detail = {}, realJson = {}} = profile;
     const {resultDataList = []} = detail;
-    const {requestParamVos = [], requestResultVos = []} = data;
-    const {mockRequestResult = {}} = realJson;
-
-    console.log("查询结果", mockRequestResult);
+    const {requestResultVos = []} = this.state.data;
 
     const definitionColumn = [
       {
@@ -211,6 +250,8 @@ class BasicProfile extends Component {
         render: (text, record) => {
           return (
             <Input
+              name={record.name}
+              onChange={this.changeDefaultParamValue}
               defaultValue={text}
             />);
         }
@@ -222,14 +263,14 @@ class BasicProfile extends Component {
           <DescriptionList size="large" title="简要描述" style={{marginBottom: 32}}>
             <Description term="请求URL">
               <Popover content="点击生成Json请求数据" trigger="hover">
-                <Button onClick={() => this.queryRealResult(data)} type="link">{data.url}</Button>
+                <Button onClick={() => this.queryRealResult(this.state.data)} type="link">{this.state.data.url}</Button>
               </Popover></Description>
           </DescriptionList>
           <DescriptionList size="large" style={{marginBottom: 32}}>
-            <Description term="请求方式">{data.method}</Description>
+            <Description term="请求方式">{this.state.data.method}</Description>
           </DescriptionList>
           <DescriptionList size="large" style={{marginBottom: 32}}>
-            <Description term="简要描述">{data.description}</Description>
+            <Description term="简要描述">{this.state.data.description}</Description>
           </DescriptionList>
           <Divider style={{marginBottom: 32}}/>
           <Modal
@@ -253,7 +294,7 @@ class BasicProfile extends Component {
             bordered={true}
             style={{marginBottom: 24}}
             pagination={false}
-            dataSource={requestParamVos}
+            dataSource={this.state.requestParamVos}
             columns={requestColumn}
           />
           <div className={styles.title}>返回参数(data里面的数据)</div>
@@ -270,9 +311,9 @@ class BasicProfile extends Component {
           <Result
             icon={<Icon type="smile" theme="twoTone"/>}
             title="Great, 让我们依据上面设置的默认值来获取下实际json吧!"
-            extra={<Button type="primary" onClick={() => this.queryRealResult(data)}>Try</Button>}
+            extra={<Button type="primary" onClick={() => this.queryRealResult(this.state.data)}>Try</Button>}
           >
-            {mockRequestResult}
+            <ReactJson src={this.state.resultObj}/>
           </Result>
         </Card>
 

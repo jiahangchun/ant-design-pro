@@ -81,16 +81,6 @@ class TableList extends PureComponent {
       ellipsis: true,
       key: 'description',
     },
-    // {
-    //   title: '操作',
-    //   render: (text, record) => (
-    //     <Fragment>
-    //       <a onClick={() => this.handleUpdateModalVisible(true, record)}>详情</a>
-    //       {/*<Divider type="vertical" />*/}
-    //       {/*<a href=""></a>*/}
-    //     </Fragment>
-    //   ),
-    // },
   ];
 
   componentDidMount() {
