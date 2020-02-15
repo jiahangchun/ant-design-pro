@@ -1,5 +1,5 @@
-import React, {PureComponent, Fragment} from 'react';
-import {connect} from 'dva';
+import React, { PureComponent, Fragment } from 'react';
+import { connect } from 'dva';
 import moment from 'moment';
 import Link from 'umi/link';
 import {
@@ -21,7 +21,8 @@ import {
   Divider,
   Steps,
   Radio,
-  Table, Popconfirm,
+  Table,
+  Popconfirm,
 } from 'antd';
 import StandardTable from '@/components/StandardTable';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -29,9 +30,9 @@ import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import styles from './TableList.less';
 
 const FormItem = Form.Item;
-const {Step} = Steps;
-const {TextArea} = Input;
-const {Option} = Select;
+const { Step } = Steps;
+const { TextArea } = Input;
+const { Option } = Select;
 const RadioGroup = Radio.Group;
 const getValue = obj =>
   Object.keys(obj)
@@ -39,7 +40,7 @@ const getValue = obj =>
     .join(',');
 
 /* eslint react/no-multi-comp:0 */
-@connect(({swagger, loading}) => ({
+@connect(({ swagger, loading }) => ({
   swagger,
   loading: loading.models.swagger,
 }))
@@ -59,43 +60,46 @@ class TableList extends PureComponent {
       title: '模块',
       dataIndex: 'tagStr',
       key: 'tagStr',
-      render: (text, record) => {
-        return (
-          <Link to={`/profile/basic/${record.key}`}>{text}</Link>
-        );
-      }
+      width: '10%',
     },
     {
       title: '请求地址',
       dataIndex: 'url',
       key: 'url',
+      render: (text, record) => {
+        return <Link to={`/profile/basic/${record.key}`}>{text}</Link>;
+      },
+      width: '30%',
     },
     {
-      title: '请求方法',
+      title: '方法',
       dataIndex: 'method',
       key: 'method',
+      width: '10%',
     },
+
     {
       title: '描述',
       dataIndex: 'description',
       ellipsis: true,
       key: 'description',
+      width: '50%',
     },
   ];
 
   componentDidMount() {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'swagger/fetch',
     });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const {dispatch} = this.props;
-    const {formValues} = this.state;
+    const { dispatch } = this.props;
+    const { formValues } = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = {...obj};
+      const newObj = { ...obj };
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
@@ -117,7 +121,7 @@ class TableList extends PureComponent {
   };
 
   handleFormReset = () => {
-    const {form, dispatch} = this.props;
+    const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
@@ -131,7 +135,7 @@ class TableList extends PureComponent {
   handleSearch = e => {
     e.preventDefault();
 
-    const {dispatch, form} = this.props;
+    const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
@@ -152,20 +156,20 @@ class TableList extends PureComponent {
 
   renderSimpleForm() {
     const {
-      form: {getFieldDecorator},
+      form: { getFieldDecorator },
     } = this.props;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
-        <Row gutter={{md: 8, lg: 24, xl: 48}}>
+        <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="url">
-              {getFieldDecorator('url')(<Input placeholder="请输入"/>)}
+            <FormItem label="请求地址">
+              {getFieldDecorator('url')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="Tag">
+            <FormItem label="项目模块">
               {getFieldDecorator('tag')(
-                <Select placeholder="请选择" style={{width: '100%'}}>
+                <Select placeholder="请选择" style={{ width: '100%' }}>
                   <Option value="OMS">OMS</Option>
                   <Option value="PMS">PMS</Option>
                   <Option value="多地址改造">多地址改造</Option>
@@ -178,7 +182,7 @@ class TableList extends PureComponent {
               <Button type="primary" htmlType="submit">
                 查询
               </Button>
-              <Button style={{marginLeft: 8}} onClick={this.handleFormReset}>
+              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
                 重置
               </Button>
             </span>
@@ -190,7 +194,7 @@ class TableList extends PureComponent {
 
   render() {
     const {
-      swagger: {data},
+      swagger: { data },
       loading,
     } = this.props;
 
@@ -204,7 +208,7 @@ class TableList extends PureComponent {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderSimpleForm()}</div>
-            <Table dataSource={goodsData} columns={this.columns}/>
+            <Table dataSource={goodsData} columns={this.columns} />
           </div>
         </Card>
       </PageHeaderWrapper>
