@@ -19,3 +19,13 @@ export async function querySwaggerDetail(key) {
 export async function querySwaggerDefinition(key) {
   return request(`/tp/get/definition/dto?key=${key}`);
 }
+
+//查询请求的真实json
+export async function queryRealResult(params) {
+  return request('/tp/mock/request', {
+    method: 'POST',
+    data: {
+      ...params,
+    },
+  });
+}

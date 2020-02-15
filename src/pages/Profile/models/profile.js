@@ -1,5 +1,5 @@
-import { queryAdvancedProfile } from '@/services/api';
-import { querySwaggerDetail, querySwaggerDefinition } from '@/services/swagger';
+import {queryAdvancedProfile} from '@/services/api';
+import {querySwaggerDetail, querySwaggerDefinition, queryRealResult} from '@/services/swagger';
 
 export default {
   namespace: 'profile',
@@ -11,17 +11,18 @@ export default {
     advancedOperation3: [],
     data: {},
     detail: {},
+    realJson: {},
   },
 
   effects: {
-    *querySwaggerDetail({ payload }, { call, put }) {
+    * querySwaggerDetail({payload}, {call, put}) {
       const response = yield call(querySwaggerDetail, payload);
       yield put({
         type: 'save',
         payload: response,
       });
     },
-    *getSwaggerDefinition({ payload }, { call, put }) {
+    * getSwaggerDefinition({payload}, {call, put}) {
       const response = yield call(querySwaggerDefinition, payload);
       yield put({
         type: 'detail',
@@ -29,7 +30,14 @@ export default {
       });
     },
 
-    *fetchAdvanced(_, { call, put }) {
+    * queryRealResult({payload}, {call, put}) {
+      const response = yield call(queryRealResult, payload);
+      yield put({
+        type: 'realJson',
+        payload: response,
+      });
+    },
+    * fetchAdvanced(_, {call, put}) {
       const response = yield call(queryAdvancedProfile);
       yield put({
         type: 'show',
@@ -39,7 +47,7 @@ export default {
   },
 
   reducers: {
-    show(state, { payload }) {
+    show(state, {payload}) {
       return {
         ...state,
         ...payload,
@@ -47,10 +55,16 @@ export default {
     },
 
     detail(state, action) {
-      console.log('返回结果填充', action.payload);
       return {
         ...state,
         detail: action.payload,
+      };
+    },
+    realJson(state, action) {
+      console.log('返回结果填充', action.payload);
+      return {
+        ...state,
+        realJson: action.payload,
       };
     },
 
